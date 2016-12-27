@@ -10,6 +10,10 @@ import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.mikepenz.google_material_typeface_library.GoogleMaterial;
+import com.mikepenz.materialdrawer.DrawerBuilder;
+import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
+
 public class MainActivity extends AppCompatActivity {
 
     @Override
@@ -30,6 +34,16 @@ public class MainActivity extends AppCompatActivity {
                 ft.commit();
             }
         });
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        new DrawerBuilder()
+                .withActivity(this)
+                .withHeader(R.layout.mipt_logo)
+                .addDrawerItems(new PrimaryDrawerItem().withIdentifier(1).withName("Поиск задач в Корявове").withIcon(GoogleMaterial.Icon.gmd_search))
+                .build();
     }
 
     @Override
