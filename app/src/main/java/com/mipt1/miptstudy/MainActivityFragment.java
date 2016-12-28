@@ -2,6 +2,7 @@ package com.mipt1.miptstudy;
 
 import android.app.ProgressDialog;
 import android.os.AsyncTask;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.util.Log;
@@ -25,14 +26,14 @@ import java.util.concurrent.ExecutionException;
 /**
  * A placeholder fragment containing a simple view.
  */
-public class MainActivityFragment extends Fragment {
+public class MainActivityFragment extends Fragment implements MIPT1_Helper.TaskFoundCallback {
 
-    String problem_page;
     Spinner topic_spinner;
     EditText editText_problem_number;
     Button btn_do_search;
     TextView tv_search_results;
     private ProgressDialog pd;
+    MIPT1_Helper helper = new MIPT1_Helper();
     int course = 0;
 
     public MainActivityFragment() {
@@ -45,12 +46,14 @@ public class MainActivityFragment extends Fragment {
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
-        new NetworkRequests().execute("14.23");
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        helper.registerCallback(this);
         topic_spinner = (Spinner) getView().findViewById(R.id.spinner_select_topic_physics);
-        String[] data = {"Механика", "Термодинамика и молекулярная физика", "Электричество и магнетизм", "Оптика", "Атомная и ядерная физика"};
-        topic_spinner.setAdapter(new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_dropdown_item, data));
+        topic_spinner.setAdapter(new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_dropdown_item, MIPT1_Helper.topics));
+        if(savedInstanceState != null) {
+            topic_spinner.setSelection(course - 1);
+        }
         topic_spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -63,10 +66,12 @@ public class MainActivityFragment extends Fragment {
             }
         });
         editText_problem_number = (EditText) getView().findViewById(R.id.editText_problem);
-        editText_problem_number.setOnClickListener(new View.OnClickListener() {
+        editText_problem_number.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
-            public void onClick(View v) {
-                editText_problem_number.setText("");
+            public void onFocusChange(View v, boolean hasFocus) {
+                if(hasFocus) {
+                    editText_problem_number.setText("");
+                }
             }
         });
         btn_do_search = (Button) getView().findViewById(R.id.button_search_problem);
@@ -76,10 +81,8 @@ public class MainActivityFragment extends Fragment {
             public void onClick(View v) {
                 try {
                     if (editText_problem_number.length() != 0) {
-                        pd = ProgressDialog.show(getContext(), "Ищем задачу в Корявове, пожалуйста, будьте терпеливы!", "");
-                        new NetworkRequests().execute(editText_problem_number.getText().toString()).get();
-                        tv_search_results.setText(problem_page);
-                        pd.cancel();
+                        pd = ProgressDialog.show(getContext(), "Поиск", "Ищем задачу в Корявове, пожалуйста, будьте терпеливы!");
+                        helper.search_problem_in_Kor(editText_problem_number.getText().toString());
                     }
                 } catch(Exception e ) {
                     e.printStackTrace();
@@ -87,36 +90,20 @@ public class MainActivityFragment extends Fragment {
                 }
             }
         });
+
     }
 
-    private class NetworkRequests extends AsyncTask<String, Void, String> {
-
-        public String make_search_request(String problem) {
-            String URL = (new StringBuilder()).append("https://mipt1.ru/1_2_3_4_5_kor.php?sem=1&zad=").append(problem).toString();
-            Document doc = null;
-            try {
-                //Log.d("my_log", URL);
-                doc = Jsoup.connect(URL).get();
-                //Log.d("my_log", doc.text());
-            } catch(IOException e) {
-                e.printStackTrace();
-                return "nothing";
-            }
-            return doc.text();
+    @Override
+    public void problem_found_callback(String result) {
+        if(pd.isShowing()) {
+            pd.cancel();
         }
-
-        @Override
-        protected String doInBackground(String... params) {
-            return make_search_request(params[0]);
-        }
-
-        @Override
-        protected void onPostExecute(String s) {
-            super.onPostExecute(s);
-            int tmp = s.indexOf("Задача");
-            problem_page = s.substring(tmp, s.indexOf("!", tmp));
-            //Log.d("my_log", problem_page);
-            //Log.d("my_logs", s);
-        }
+        tv_search_results.setText(result);
     }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+    }
+
 }
