@@ -48,12 +48,21 @@ public class MainActivityFragment extends Fragment implements MIPT1_Helper.TaskF
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        // Callback-магия
         helper.registerCallback(this);
+
         topic_spinner = (Spinner) getView().findViewById(R.id.spinner_select_topic_physics);
-        topic_spinner.setAdapter(new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_dropdown_item, MIPT1_Helper.topics));
+        editText_problem_number = (EditText) getView().findViewById(R.id.editText_problem);
+        btn_do_search = (Button) getView().findViewById(R.id.button_search_problem);
+        tv_search_results = (TextView) getView().findViewById(R.id.textView_search_problem_result);
+
+        topic_spinner.setAdapter(new ArrayAdapter<>(getActivity(),
+                android.R.layout.simple_spinner_dropdown_item, MIPT1_Helper.topics));
+        // Поворот экрана - вернуть выбор спиннера
         if(savedInstanceState != null) {
             topic_spinner.setSelection(course - 1);
         }
+
         topic_spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -65,7 +74,8 @@ public class MainActivityFragment extends Fragment implements MIPT1_Helper.TaskF
 
             }
         });
-        editText_problem_number = (EditText) getView().findViewById(R.id.editText_problem);
+
+        // Чистим при фокусе
         editText_problem_number.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
@@ -74,8 +84,7 @@ public class MainActivityFragment extends Fragment implements MIPT1_Helper.TaskF
                 }
             }
         });
-        btn_do_search = (Button) getView().findViewById(R.id.button_search_problem);
-        tv_search_results = (TextView) getView().findViewById(R.id.textView_search_problem_result);
+
         btn_do_search.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

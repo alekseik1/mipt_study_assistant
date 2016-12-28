@@ -34,6 +34,11 @@ public class MainActivity extends AppCompatActivity {
                 ft.commit();
             }
         });
+        // Первый запуск, не поворот
+        if(savedInstanceState == null) {
+            FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+            ft.replace(R.id.fragment, new MainActivityFragment()).commit();
+        }
     }
 
     @Override
@@ -42,7 +47,10 @@ public class MainActivity extends AppCompatActivity {
         new DrawerBuilder()
                 .withActivity(this)
                 .withHeader(R.layout.mipt_logo)
-                .addDrawerItems(new PrimaryDrawerItem().withIdentifier(1).withName("Поиск задач в Корявове").withIcon(GoogleMaterial.Icon.gmd_search))
+                .addDrawerItems(new PrimaryDrawerItem()
+                        .withIdentifier(1)
+                        .withName("Поиск задач в Корявове")
+                        .withIcon(GoogleMaterial.Icon.gmd_search))
                 .build();
     }
 
