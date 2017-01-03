@@ -90,9 +90,14 @@ public class MainActivityFragment extends Fragment implements MIPT1_Helper.TaskF
             public void onClick(View v) {
                 try {
                     if (editText_problem_number.length() != 0) {
+                        if (!editText_problem_number.getText().toString().matches("[0-9]+\\.[0-9]+")) {
+                            throw new IllegalArgumentException();
+                        }
                         pd = ProgressDialog.show(getContext(), "Поиск", "Ищем задачу в Корявове, пожалуйста, будьте терпеливы!");
                         helper.search_problem_in_Kor(editText_problem_number.getText().toString());
                     }
+                } catch(IllegalArgumentException e) {
+                    Log.d("my_log", "Неправильный ввод");
                 } catch(Exception e ) {
                     e.printStackTrace();
                     pd.cancel();

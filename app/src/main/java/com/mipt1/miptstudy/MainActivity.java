@@ -6,15 +6,22 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 
 import com.mikepenz.google_material_typeface_library.GoogleMaterial;
+import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.DrawerBuilder;
+import com.mikepenz.materialdrawer.model.ExpandableDrawerItem;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
+import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
+import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 
 public class MainActivity extends AppCompatActivity {
+
+    public int curr_selection = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,14 +51,70 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        new DrawerBuilder()
+        final Drawer dr = new DrawerBuilder()
                 .withActivity(this)
                 .withHeader(R.layout.mipt_logo)
                 .addDrawerItems(new PrimaryDrawerItem()
                         .withIdentifier(1)
                         .withName("Поиск задач в Корявове")
-                        .withIcon(GoogleMaterial.Icon.gmd_search))
+                        .withIcon(GoogleMaterial.Icon.gmd_search),
+                        new ExpandableDrawerItem()
+                                .withName("Материалы с mipt1.ru")
+                                .withIcon(GoogleMaterial.Icon.gmd_description).withSelectable(false).withSubItems(
+                                    new SecondaryDrawerItem()
+                                            .withLevel(2)
+                                            .withIdentifier(3)
+                                            .withName("1 семестр")
+                                            .withIcon(GoogleMaterial.Icon.gmd_filter_1),
+                                    new SecondaryDrawerItem()
+                                            .withLevel(2)
+                                            .withIdentifier(4)
+                                            .withName("2 семестр")
+                                            .withIcon(GoogleMaterial.Icon.gmd_filter_2),
+                                    new SecondaryDrawerItem()
+                                            .withLevel(2)
+                                            .withIdentifier(5)
+                                            .withName("3 семестр")
+                                            .withIcon(GoogleMaterial.Icon.gmd_filter_3),
+                                    new SecondaryDrawerItem()
+                                            .withLevel(2)
+                                            .withIdentifier(6)
+                                            .withName("4 семестр")
+                                            .withIcon(GoogleMaterial.Icon.gmd_filter_4),
+                                    new SecondaryDrawerItem()
+                                            .withLevel(2)
+                                            .withIdentifier(7)
+                                            .withName("5 семестр")
+                                            .withIcon(GoogleMaterial.Icon.gmd_filter_5),
+                                    new SecondaryDrawerItem()
+                                            .withLevel(2)
+                                            .withIdentifier(8)
+                                            .withName("6 семестр")
+                                            .withIcon(GoogleMaterial.Icon.gmd_filter_6),
+                                    new SecondaryDrawerItem()
+                                            .withLevel(2)
+                                            .withIdentifier(9)
+                                            .withName("7 семестр")
+                                            .withIcon(GoogleMaterial.Icon.gmd_filter_7)))
                 .build();
+
+        dr.setOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
+            @Override
+            public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
+                FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+                if(position == curr_selection) {
+                    Log.d("my_log", "Clicked the same fragment");
+                    return true;
+                }
+                if(drawerItem.getIdentifier() == 1) {
+                    curr_selection = 1;
+                    ft.replace(R.id.fragment, new MainActivityFragment());
+                } else if(drawerItem.getIdentifier() == 2) {
+                    curr_selection = 2;
+                }
+                return false;
+            }
+        });
     }
 
     @Override
