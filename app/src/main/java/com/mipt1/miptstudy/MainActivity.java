@@ -21,7 +21,7 @@ import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 
 public class MainActivity extends AppCompatActivity {
 
-    public int curr_selection = 1;
+    public long curr_selection = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -106,11 +106,12 @@ public class MainActivity extends AppCompatActivity {
                     Log.d("my_log", "Clicked the same fragment");
                     return true;
                 }
-                if(drawerItem.getIdentifier() == 1) {
-                    curr_selection = 1;
-                    ft.replace(R.id.fragment, new MainActivityFragment());
-                } else if(drawerItem.getIdentifier() == 2) {
-                    curr_selection = 2;
+                curr_selection = drawerItem.getIdentifier();
+                switch ((int) curr_selection) {
+                    case 1:
+                        ft.replace(R.id.fragment, new MainActivityFragment());
+                        break;
+                    case 2:
                 }
                 return false;
             }

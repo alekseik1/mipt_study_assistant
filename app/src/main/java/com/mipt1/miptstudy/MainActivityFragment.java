@@ -34,7 +34,6 @@ public class MainActivityFragment extends Fragment implements MIPT1_Helper.TaskF
     TextView tv_search_results;
     private ProgressDialog pd;
     MIPT1_Helper helper = new MIPT1_Helper();
-    int course = 0;
 
     public MainActivityFragment() {
     }
@@ -57,16 +56,16 @@ public class MainActivityFragment extends Fragment implements MIPT1_Helper.TaskF
         tv_search_results = (TextView) getView().findViewById(R.id.textView_search_problem_result);
 
         topic_spinner.setAdapter(new ArrayAdapter<>(getActivity(),
-                android.R.layout.simple_spinner_dropdown_item, MIPT1_Helper.topics));
+                android.R.layout.simple_spinner_dropdown_item, helper.topics));
         // Поворот экрана - вернуть выбор спиннера
         if(savedInstanceState != null) {
-            topic_spinner.setSelection(course - 1);
+            topic_spinner.setSelection(helper.sem - 1);
         }
 
         topic_spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                course = position + 1;
+                helper.sem = position + 1;
             }
 
             @Override
